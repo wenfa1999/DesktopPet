@@ -12,4 +12,4 @@
 
 ## LICENSE
 
-[AGPL](./LICENSE)
+![GitHub](https://img.shields.io/github/license/wenfa1999/DesktopPet)
