@@ -9,3 +9,7 @@
 | :black_square_button: | Custom image |
 | :black_square_button: | Hourly chime |
 | :black_square_button: | ...          |
+
+## LICENSE
+
+[AGPL](./LICENSE)
