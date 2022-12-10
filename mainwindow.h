@@ -8,7 +8,6 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QMouseEvent>
-#include <QCursor>
 #include <QPoint>
 
 QT_BEGIN_NAMESPACE
@@ -33,8 +32,11 @@ private:
     Ui::MainWindow *ui;
 
     QSystemTrayIcon *m_systemTrayIcon;
+    QAction *m_showAction;
+    QAction *m_hideAction;
     QAction *m_quitAction;
     QMenu *m_trayIconMenu;
+
 
     QPoint m_lastPos;
     bool isMouseMoving;
@@ -44,5 +46,6 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 };
 #endif // MAINWINDOW_H
