@@ -1,0 +1,37 @@
+QMenu.iconMenu {
+    padding: 5px;
+    border-radius:3px;
+    background-color: #93b5cf;
+}
+
+QMenu.iconMenu::separator {
+    height: 2px;
+    margin: 6px 0;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+QMenu.iconMenu::icon {
+    padding: 0 0 0 10px;
+}
+
+QMenu.iconMenu::item {
+    color: #2b1216;
+    padding: 3px 10px;
+    font-weight: bold;
+    background-color: transparent;
+}
+
+
+QMenu.iconMenu::item:hover:enabled,
+QMenu.iconMenu::item:selected:enabled {
+    background-color: #c1b2a3;
+}
+
+QMenu.iconMenu::item:pressed:enabled {
+    background-color: yellowgreen;
+}
+
+QMenu.iconMenu::item::disabled {
+    color: #f2e6ce;
+    font-weight: normal;
+}

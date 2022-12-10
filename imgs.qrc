@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file alias="catIcon">imgs/cat.svg</file>
         <file alias="chicken">imgs/chicken.svg</file>
+        <file alias="keqing">imgs/keqing.png</file>
+    </qresource>
+    <qresource lang="qss" prefix="/qss">
+        <file alias="qss">qss/DesktopPet.qss</file>
     </qresource>
 </RCC>
