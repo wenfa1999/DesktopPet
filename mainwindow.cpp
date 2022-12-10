@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
                          Qt::WindowStaysOnTopHint | Qt::NoDropShadowWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
 
-    this->resize(960, 540);
+    //    this->resize(960, 540);
 
     actionInit();
     trayIconInit();
@@ -31,21 +31,32 @@ MainWindow::MainWindow(QWidget *parent)
     m_systemTrayIcon->show();
 
     QLabel *label = new QLabel(this);
-    QPixmap pix(":/keqing");
-    //    QPixmap pix(":/chicken");
-    pix.scaled(240, 324, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    label->setPixmap(
-                pix.scaled(240, 324, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-    label->resize(QSize(240, 324));
+    //    QPixmap pix(":/keqing");
+    //    pix.scaled(200, 200, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    //    label->setPixmap(
+    //                pix.scaled(200, 200, Qt::IgnoreAspectRatio,
+    //                Qt::SmoothTransformation));
+    label->resize(QSize(200, 200));
+
+    m_movie = new QMovie(this);
+    m_movie->setFileName(":/img/basketball");
+    label->setMovie(m_movie);
+    m_movie->start();
     this->setFixedSize(QSize(240, 324));
-
-
 
     connect(m_systemTrayIcon, &QSystemTrayIcon::activated, this,
             [=](QSystemTrayIcon::ActivationReason reson) {
         switch (reson) {
         case QSystemTrayIcon::DoubleClick:
-            this->setVisible(!(this->isVisible()));
+            if (this->isVisible()) {
+                this->setVisible(false);
+                m_showAction->setEnabled(true);
+                m_hideAction->setEnabled(false);
+            } else {
+                this->setVisible(true);
+                m_showAction->setEnabled(false);
+                m_hideAction->setEnabled(true);
+            }
             break;
         default:
             break;
@@ -55,13 +66,16 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() { delete ui; }
 
+/**
+ * @brief 各Action初始化
+ */
 void MainWindow::actionInit() {
     m_showAction = new QAction("显示", this);
+    m_showAction->setEnabled(false);
     connect(m_showAction, &QAction::triggered, this, [=] {
         if (!this->isVisible()) {
             this->show();
         }
-
         m_showAction->setEnabled(false);
         m_hideAction->setEnabled(true);
     });
@@ -77,6 +91,9 @@ void MainWindow::actionInit() {
     connect(m_quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
 
+/**
+ * @brief 系统托盘初始化
+ */
 void MainWindow::trayIconInit() {
     m_trayIconMenu = new QMenu(this);
     m_trayIconMenu->setProperty("class", "iconMenu");
@@ -88,8 +105,13 @@ void MainWindow::trayIconInit() {
 
     m_systemTrayIcon = new QSystemTrayIcon(this);
     m_systemTrayIcon->setContextMenu(m_trayIconMenu);
+    m_systemTrayIcon->setToolTip("桌宠");
 }
 
+/**
+ * @brief 重写mousePressEvent函数，实现左键拖动功能
+ * @param event
+ */
 void MainWindow::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         isMouseMoving = true;
@@ -98,6 +120,10 @@ void MainWindow::mousePressEvent(QMouseEvent *event) {
     QMainWindow::mousePressEvent(event);
 }
 
+/**
+ * @brief 重写mouseReleaseEvent函数，实现左键拖动功能
+ * @param event
+ */
 void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
     if ((Qt::LeftButton == event->button()) && (true == isMouseMoving)) {
         isMouseMoving = false;
@@ -105,6 +131,10 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
     QMainWindow::mouseReleaseEvent(event);
 }
 
+/**
+ * @brief M重写mouseMoveEvent函数，实现左键拖动功能
+ * @param event
+ */
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     if (true == isMouseMoving) {
         this->move(this->pos() + (event->globalPos() - m_lastPos));
@@ -113,9 +143,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
     QMainWindow::mouseMoveEvent(event);
 }
 
+/**
+ * @brief 重写mouseDoubleClickEvent函数，实现双击隐藏
+ * @param event
+ */
 void MainWindow::mouseDoubleClickEvent(QMouseEvent *event) {
     if (Qt::LeftButton == event->button()) {
         this->hide();
+        m_showAction->setEnabled(true);
+        m_hideAction->setEnabled(false);
     }
     QMainWindow::mouseDoubleClickEvent(event);
 }

@@ -9,6 +9,7 @@
 #include <QPixmap>
 #include <QMouseEvent>
 #include <QPoint>
+#include <QMovie>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -36,6 +37,8 @@ private:
     QAction *m_hideAction;
     QAction *m_quitAction;
     QMenu *m_trayIconMenu;
+
+    QMovie *m_movie;
 
 
     QPoint m_lastPos;
