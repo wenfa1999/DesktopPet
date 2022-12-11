@@ -6,7 +6,9 @@
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent){
+    : QMainWindow(parent)
+    ,settingInterface(nullptr)
+{
     QString qss;
     QFile qssFile(":/qss/qss");
     qssFile.open(QFile::ReadOnly);
@@ -62,7 +64,8 @@ MainWindow::MainWindow(QWidget *parent)
     });
 }
 
-MainWindow::~MainWindow() {  }
+MainWindow::~MainWindow() {
+}
 
 /**
  * @brief 各Action初始化
@@ -88,8 +91,11 @@ void MainWindow::actionInit() {
 
     m_setAction = new QAction("设置", this);
     connect(m_setAction, &QAction::triggered, this, [=] {
-//        settingInterface = new AppConfig();
-//        settingInterface->show();
+        if (nullptr == settingInterface)
+        {
+            settingInterface = new AppConfig();
+        }
+        settingInterface->show();
     });
 
     m_quitAction = new QAction("退出", this);

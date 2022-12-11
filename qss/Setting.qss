@@ -1,13 +1,20 @@
-QWidget.settingWidget {
+QWidget.generalSetWidget {
+    font-size: 25px;
+}
+
+AppConfig#AppConfig {
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FFF3B0, stop:1 #CA26FF);
 }
 
-.showWIdget {
-    background-color: rgba(255, 255, 255, 0.443);
+QWidget.lanWidget {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 5%;
+    font-size: 25px;
 }
 
 QListWidget {
     font-size: 25px;
+    margin-top: 20px;
     font-weight: bold;
     border-radius: 5%;
     background-color: transparent;
