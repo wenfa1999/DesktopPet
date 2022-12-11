@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         imgs.qrc
         README.md
+        appconfig.h
+        appconfig.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
