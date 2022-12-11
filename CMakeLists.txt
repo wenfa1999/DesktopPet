@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         README.md
         appconfig.h
         appconfig.cpp
+        logo.rc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
