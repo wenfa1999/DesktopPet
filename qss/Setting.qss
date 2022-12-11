@@ -1,0 +1,32 @@
+QWidget.settingWidget {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #FFF3B0, stop:1 #CA26FF);
+}
+
+.showWIdget {
+    background-color: rgba(255, 255, 255, 0.443);
+}
+
+QListWidget {
+    font-size: 25px;
+    font-weight: bold;
+    border-radius: 5%;
+    background-color: transparent;
+    outline: 0px;
+}
+
+QListWidget::item {
+    border-radius: 5%;
+    padding: 8px;
+}
+
+QListWidget::item:hover,
+QListWidget::item:selected {
+    background-color: rgba(246, 246, 253, 0.5);
+}
+
+QListWidget::item:focus {
+    border: 2px solid;
+    border-color: rgba(0, 0, 0, 0.8);
+    color: #000;
+    background-color: rgb(246, 246, 253);
+}

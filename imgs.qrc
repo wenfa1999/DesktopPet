@@ -6,6 +6,7 @@
     </qresource>
     <qresource prefix="/qss" lang="qss">
         <file alias="qss">qss/DesktopPet.qss</file>
+        <file alias="setting">qss/Setting.qss</file>
     </qresource>
     <qresource prefix="/img">
         <file alias="basketball">imgs/basketball.gif</file>

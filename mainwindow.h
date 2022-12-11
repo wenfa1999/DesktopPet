@@ -11,6 +11,8 @@
 #include <QPoint>
 #include <QMovie>
 
+#include "appconfig.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -36,10 +38,12 @@ private:
     QAction *m_showAction;
     QAction *m_hideAction;
     QAction *m_quitAction;
+    QAction *m_setAction;
     QMenu *m_trayIconMenu;
 
     QMovie *m_movie;
 
+    AppConfig *settingInterface;
 
     QPoint m_lastPos;
     bool isMouseMoving;

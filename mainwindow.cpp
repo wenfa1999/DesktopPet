@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+
     QString qss;
     QFile qssFile(":/qss/qss");
     qssFile.open(QFile::ReadOnly);
@@ -21,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint |
                          Qt::WindowStaysOnTopHint | Qt::NoDropShadowWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
+    this->setAttribute(Qt::WA_QuitOnClose);
 
     //    this->resize(960, 540);
 
@@ -87,6 +89,13 @@ void MainWindow::actionInit() {
         m_showAction->setEnabled(true);
         m_hideAction->setEnabled(false);
     });
+
+    m_setAction = new QAction("设置", this);
+    connect(m_setAction, &QAction::triggered, this, [=] {
+        settingInterface = new AppConfig();
+        settingInterface->show();
+    });
+
     m_quitAction = new QAction("退出", this);
     connect(m_quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
@@ -100,6 +109,8 @@ void MainWindow::trayIconInit() {
 
     m_trayIconMenu->addAction(m_showAction);
     m_trayIconMenu->addAction(m_hideAction);
+    m_trayIconMenu->addSeparator();
+    m_trayIconMenu->addAction(m_setAction);
     m_trayIconMenu->addSeparator();
     m_trayIconMenu->addAction(m_quitAction);
 
