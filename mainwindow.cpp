@@ -1,5 +1,4 @@
 ﻿#include "mainwindow.h"
-#include "./ui_mainwindow.h"
 #include <QDebug>
 
 #if _MSC_VER >= 1600 // VS2010版本号是1600
@@ -7,10 +6,7 @@
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
-    ui->setupUi(this);
-
-
+    : QMainWindow(parent){
     QString qss;
     QFile qssFile(":/qss/qss");
     qssFile.open(QFile::ReadOnly);
@@ -66,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 }
 
-MainWindow::~MainWindow() { delete ui; }
+MainWindow::~MainWindow() {  }
 
 /**
  * @brief 各Action初始化
@@ -92,8 +88,8 @@ void MainWindow::actionInit() {
 
     m_setAction = new QAction("设置", this);
     connect(m_setAction, &QAction::triggered, this, [=] {
-        settingInterface = new AppConfig();
-        settingInterface->show();
+//        settingInterface = new AppConfig();
+//        settingInterface->show();
     });
 
     m_quitAction = new QAction("退出", this);

@@ -13,9 +13,6 @@
 
 #include "appconfig.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -32,7 +29,6 @@ private:
     void trayIconInit(void);
 
 private:
-    Ui::MainWindow *ui;
 
     QSystemTrayIcon *m_systemTrayIcon;
     QAction *m_showAction;

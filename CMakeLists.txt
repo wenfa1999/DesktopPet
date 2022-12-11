@@ -18,7 +18,6 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
-        mainwindow.ui
         imgs.qrc
         README.md
         appconfig.h
