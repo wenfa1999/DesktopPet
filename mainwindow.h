@@ -10,8 +10,11 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <QMovie>
+#include <QThread>
 
 #include "appconfig.h"
+#include <sqlite3.h>
+#include "mydatabase.h"
 
 
 class MainWindow : public QMainWindow
@@ -43,6 +46,9 @@ private:
 
     QPoint m_lastPos;
     bool isMouseMoving;
+
+    sqlite3 *db;
+    char * errMsg = nullptr;
 
     // QWidget interface
 protected:

@@ -22,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setAttribute(Qt::WA_QuitOnClose);
 
-    //    this->resize(960, 540);
+    // 初始化数据库
+    MyDatabase *dataBase = MyDatabase::instance();
 
     actionInit();
     trayIconInit();
@@ -95,7 +96,8 @@ void MainWindow::actionInit() {
         {
             settingInterface = new AppConfig();
         }
-        settingInterface->show();
+        settingInterface->show();   // 展示
+        settingInterface->raise();  // 置顶
     });
 
     m_quitAction = new QAction("退出", this);

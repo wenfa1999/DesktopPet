@@ -11,6 +11,15 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QRadioButton>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QScrollArea>
+#include <QSizePolicy>
+#include <QGroupBox>
+#include <QFileDialog>
+
+#include "mydatabase.h"
 
 class AppConfig : public QWidget {
     Q_OBJECT
@@ -20,15 +29,17 @@ public:
     ~AppConfig();
 private:
     void InterfaceInit(void);
-    void ShowGeneralSettings(void);
-    void ShowInterfaceSettings(void);
+    void GeneralSettingsInit(void);
+    void ShortcutSettingsInit(void);
 
 private:
     QListWidget *listWidget;
-    QWidget *generalSetWidget;
+    QWidget *generalSetWidget;  // 通用设置WIdget
+    QWidget *shortcutSetWidget; // 快捷键设置Widget
 
     QHBoxLayout *mainLayout;
-    QVBoxLayout *generalSetLayout;
+    QVBoxLayout *generalSetLayout;  // 通用设置Layout
+    QVBoxLayout *shortcutLayout;    // 快捷键设置Layout
 
     QHBoxLayout *lanLayout;
     QLayout *InterfaceSetLayout;
