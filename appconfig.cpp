@@ -11,6 +11,7 @@ AppConfig::AppConfig(QWidget *parent)
     , generalSetWidget(nullptr)
     , shortcutSetWidget(nullptr)
 {
+    this->setWindowFlags(Qt::FramelessWindowHint);  // 无标题栏
     this->setWindowTitle("设置");
     this->setWindowIcon(QIcon(":/chicken"));
     this->setWindowIconText("余人人");
@@ -57,8 +58,25 @@ void AppConfig::InterfaceInit() {
 
     // 窗口大小
     this->setMinimumSize(400, 225);
-    this->resize(800, 450);
+    this->resize(800, 450 + 30);
     this->setProperty("class", "settingWidget");
+
+    // 标题栏
+    QWidget *titleWidget = new QWidget(this);
+    titleWidget->setFixedHeight(30);
+    titleWidget->setProperty("class", "titleWidget");
+    titleWidget->setLayout(new QHBoxLayout());
+    QPushButton *btnMinimize = new QPushButton(titleWidget);
+    btnMinimize->setObjectName("btnMinimize");
+    QPushButton *btnMaximize = new QPushButton(titleWidget);
+    btnMaximize->setObjectName("btnMaximize");
+    QPushButton *btnClose = new QPushButton(titleWidget);
+    btnClose->setObjectName("btnClose");
+    dynamic_cast<QHBoxLayout *>(titleWidget->layout())->addStretch();
+    titleWidget->layout()->addWidget(btnMinimize);
+    titleWidget->layout()->addWidget(btnMaximize);
+    titleWidget->layout()->addWidget(btnClose);
+    titleWidget->layout()->setContentsMargins(0,0,0,0);
 
     // 左侧菜单
     listWidget = new QListWidget(this);
@@ -77,8 +95,8 @@ void AppConfig::InterfaceInit() {
     listWidget->setCurrentRow(0);
 
     // 主界面布局
-    mainLayout = new QHBoxLayout(this);
-    mainLayout->setMargin(60);
+    mainLayout = new QHBoxLayout();
+    mainLayout->setContentsMargins(60, 30, 60, 60);
     mainLayout->addStretch();
     mainLayout->addStretch();
     mainLayout->addStretch();
@@ -87,7 +105,15 @@ void AppConfig::InterfaceInit() {
     mainLayout->addStretch();
     mainLayout->addStretch();
     mainLayout->addStretch();
-    this->setLayout(mainLayout);
+
+    QVBoxLayout *widgetLayout = new QVBoxLayout(this);
+    widgetLayout->addWidget(titleWidget);
+    widgetLayout->addLayout(mainLayout);
+    widgetLayout->setMargin(10);
+    widgetLayout->setSpacing(0);
+
+    this->setLayout(widgetLayout);
+//    this->setLayout(mainLayout);
 
     // 通用设置Widget初始化
     GeneralSettingsInit();
@@ -161,61 +187,67 @@ void AppConfig::ShortcutSettingsInit()
 
     // 滚动区域
     QScrollArea *shortcutScrollArea = new QScrollArea(shortcutSetWidget);
-    // 滚动区域的Layout
-    QVBoxLayout *ScrollLayout = new QVBoxLayout(shortcutScrollArea);
+//    shortcutScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+//    shortcutScrollArea->setWidgetResizable(true);  // 设置滚动区域自适应
 
-    // F1
-    QGroupBox *F1Box = new QGroupBox(shortcutScrollArea);
-    ScrollLayout->addWidget(F1Box);
-    F1Box->setTitle("F1");
-    QGridLayout *F1Layout = new QGridLayout(F1Box);
+    // 滚动区域的Frame container
+    QFrame *container = new QFrame();
+    container->setLayout(new QVBoxLayout());
+//    container->setMinimumWidth(1200);
+    container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    for(auto i = 'A'; i <= 'Z'; ++i)
+    /// 功能区
+    for (size_t j = 0; j < 12; ++j)
     {
-        QPushButton *btn = new QPushButton(F1Box);
-        connect(btn, &QPushButton::clicked, this, [=]()
+        QGroupBox *FnBox = new QGroupBox(shortcutScrollArea);
+        container->layout()->addWidget(FnBox);
+        FnBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        FnBox->setTitle("F" + QString::number(j+1));
+        QGridLayout *FnLayout = new QGridLayout(FnBox);
+        // 设置FnBox的最小大小为其父控件的大小
+        FnBox->setMinimumSize(shortcutScrollArea->viewport()->size());
+        // 设置FnBox布局的列数为7
+        FnLayout->setColumnStretch(7, 1);
+        for(auto i = 'A'; i <= 'Z'; ++i)
         {
-            QString filePath = QFileDialog::getOpenFileName(btn, "选择文件", "", "All Files (*.*)");
-            if (!filePath.isEmpty()) {
-                qDebug() << filePath;
-                MyDatabase *database = MyDatabase::instance();
-                database->updateValue("F1", QString(i), filePath);
-            }
-        });
-        btn->setText(QString(i));
-        F1Layout->addWidget(btn, (i-2) / 7, (i-2) % 7);
-    }
-
-    // F2
-    QGroupBox *F2Box = new QGroupBox(shortcutScrollArea);
-    ScrollLayout->addWidget(F2Box);
-    F2Box->setTitle("F2");
-    QGridLayout *F2Layout = new QGridLayout(F2Box);
-    for(auto i = 'A'; i <= 'Z'; ++i)
-    {
-        QPushButton *btn = new QPushButton(F2Box);
-        connect(btn, &QPushButton::clicked, this, [=]()
-                {
-                    QString filePath = QFileDialog::getOpenFileName(btn, "选择文件", "", "All Files (*.*)");
-                    if (!filePath.isEmpty()) {
-                        qDebug() << filePath;
-                        MyDatabase *database = MyDatabase::instance();
-                        database->updateValue("F2", QString(i), filePath);
-                    }
-                });
-        btn->setText(QString(i));
-        F2Layout->addWidget(btn, (i-2) / 7, (i-2) % 7);
+            QPushButton *btn = new QPushButton(FnBox);
+            connect(btn, &QPushButton::clicked, this, [=]()
+                    {
+                        QString filePath = QFileDialog::getOpenFileName(btn, "选择文件", "", "All Files (*.*)");
+                        if (!filePath.isEmpty()) {
+                            qDebug() << filePath;
+                            MyDatabase *database = MyDatabase::instance();
+                            database->updateValue(QString("F" + QString::number(j+1)).toStdString().c_str(), QString(i), filePath);
+                        }
+                    });
+            btn->setText(QString(i));
+//            btn->setFixedSize(100, 50); // 设置按钮的固定大小
+            btn->setFont(QFont("Arial", 12)); // 设置按钮的字体大小
+            btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+            FnLayout->addWidget(btn, (i-2) / 7, (i-2) % 7);
+            FnLayout->setHorizontalSpacing(10); // 设置按钮之间的水平间距
+            FnLayout->setVerticalSpacing(10); // 设置按钮之间的垂直间距
+            FnLayout->setColumnStretch(0, 1);
+            FnLayout->setColumnStretch(1, 1);
+            FnLayout->setColumnStretch(2, 1);
+            FnLayout->setColumnStretch(3, 1);
+            FnLayout->setColumnStretch(4, 1);
+            FnLayout->setColumnStretch(5, 1);
+            FnLayout->setColumnStretch(6, 1);
+        }
     }
 
     // Test
     QPushButton *btn = new QPushButton(shortcutScrollArea);
-    ScrollLayout->addWidget(btn);
+//    container->layout()->addWidget(btn);
 
+    shortcutScrollArea->setWidget(container);
 
 
     // 快捷键配置Layout
     shortcutLayout = new QVBoxLayout(shortcutSetWidget);
     shortcutLayout->addWidget(shortcutScrollArea);
+    shortcutLayout->addWidget(btn);
 
 }
 

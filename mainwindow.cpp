@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setAttribute(Qt::WA_QuitOnClose);
 
     // 初始化数据库
-    MyDatabase *dataBase = MyDatabase::instance();
+//    MyDatabase *dataBase = MyDatabase::instance();
 
     actionInit();
     trayIconInit();
@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     label->resize(QSize(200, 200));
 
     m_movie = new QMovie(this);
-    m_movie->setFileName(":/img/basketball");
+    m_movie->setFileName(":/imgs/basketball.gif");
     label->setMovie(m_movie);
     m_movie->start();
     this->setFixedSize(QSize(240, 324));

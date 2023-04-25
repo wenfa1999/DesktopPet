@@ -37,3 +37,25 @@ QListWidget::item:focus {
     color: #000;
     background-color: rgb(246, 246, 253);
 }
+
+QPushButton#btnMaximize {
+    height: 30;
+    width: 30;
+	border-image: url(:/imgs/maximize.svg);
+}
+
+QPushButton#btnMinimize {
+    height: 30;
+    width: 30;
+    border-image: url(:/imgs/minimize.svg);
+}
+
+QPushButton#btnClose {
+    height: 30;
+    width: 30;
+    border-image: url(:/imgs/close.svg);
+}
+
+.titleWidget QPushButton:hover {
+	border: 3px solid rgba(255, 255, 255, 1);
+}

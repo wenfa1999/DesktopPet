@@ -3,12 +3,15 @@
         <file alias="catIcon">imgs/cat.svg</file>
         <file alias="chicken">imgs/chicken.svg</file>
         <file alias="keqing">imgs/keqing.png</file>
+        <file>imgs/basketball.gif</file>
+        <file>imgs/close.svg</file>
+        <file>imgs/full.svg</file>
+        <file>imgs/maximize.svg</file>
+        <file>imgs/minimize.svg</file>
+        <file>imgs/normal.svg</file>
     </qresource>
-    <qresource prefix="/qss" lang="qss">
+    <qresource lang="qss" prefix="/qss">
         <file alias="qss">qss/DesktopPet.qss</file>
         <file alias="setting">qss/Setting.qss</file>
-    </qresource>
-    <qresource prefix="/img">
-        <file alias="basketball">imgs/basketball.gif</file>
     </qresource>
 </RCC>
