@@ -67,16 +67,39 @@ void AppConfig::InterfaceInit() {
     titleWidget->setProperty("class", "titleWidget");
     titleWidget->setLayout(new QHBoxLayout());
     QPushButton *btnMinimize = new QPushButton(titleWidget);
+    btnMinimize->setFixedSize(30, 30);
     btnMinimize->setObjectName("btnMinimize");
     QPushButton *btnMaximize = new QPushButton(titleWidget);
+    btnMaximize->setFixedSize(30, 30);
     btnMaximize->setObjectName("btnMaximize");
     QPushButton *btnClose = new QPushButton(titleWidget);
+    btnClose->setFixedSize(30, 30);
     btnClose->setObjectName("btnClose");
     dynamic_cast<QHBoxLayout *>(titleWidget->layout())->addStretch();
     titleWidget->layout()->addWidget(btnMinimize);
     titleWidget->layout()->addWidget(btnMaximize);
     titleWidget->layout()->addWidget(btnClose);
     titleWidget->layout()->setContentsMargins(0,0,0,0);
+
+    // 信号槽
+    connect(btnClose, &QPushButton::clicked, this, [this](){
+        this->hide();
+    });
+    connect(btnMaximize, &QPushButton::clicked, this, [this, btnMaximize](){
+        if (this->isMaximized())
+        {
+            this->showNormal();
+            btnMaximize->setStyleSheet("border-image: url(:/imgs/maximize.svg);");
+        }
+        else
+        {
+            this->showMaximized();
+            btnMaximize->setStyleSheet("border-image: url(:/imgs/normal.svg);");
+        }
+    });
+    connect(btnMinimize, &QPushButton::clicked, this, [this](){
+        this->showMinimized();
+    });
 
     // 左侧菜单
     listWidget = new QListWidget(this);

@@ -39,20 +39,14 @@ QListWidget::item:focus {
 }
 
 QPushButton#btnMaximize {
-    height: 30;
-    width: 30;
-	border-image: url(:/imgs/maximize.svg);
+    border-image: url(:/imgs/maximize.svg);
 }
 
 QPushButton#btnMinimize {
-    height: 30;
-    width: 30;
     border-image: url(:/imgs/minimize.svg);
 }
 
 QPushButton#btnClose {
-    height: 30;
-    width: 30;
     border-image: url(:/imgs/close.svg);
 }
 
