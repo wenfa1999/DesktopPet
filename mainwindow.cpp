@@ -17,8 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
         this->setStyleSheet(qss);
     }
 
-    this->setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint |
-                         Qt::WindowStaysOnTopHint | Qt::NoDropShadowWindowHint);
+    this->setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     this->setAttribute(Qt::WA_TranslucentBackground);
     this->setAttribute(Qt::WA_QuitOnClose);
 
