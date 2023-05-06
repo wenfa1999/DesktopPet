@@ -37,6 +37,8 @@ AppConfig::AppConfig(QWidget *parent)
             break;
         }
     });
+
+    emit listWidget->currentRowChanged(0);
 }
 
 AppConfig::~AppConfig() {
@@ -68,12 +70,15 @@ void AppConfig::InterfaceInit() {
     titleWidget->setLayout(new QHBoxLayout());
     QPushButton *btnMinimize = new QPushButton(titleWidget);
     btnMinimize->setFixedSize(30, 30);
+    btnMinimize->setFocusPolicy(Qt::NoFocus);
     btnMinimize->setObjectName("btnMinimize");
     QPushButton *btnMaximize = new QPushButton(titleWidget);
     btnMaximize->setFixedSize(30, 30);
+    btnMaximize->setFocusPolicy(Qt::NoFocus);
     btnMaximize->setObjectName("btnMaximize");
     QPushButton *btnClose = new QPushButton(titleWidget);
     btnClose->setFixedSize(30, 30);
+    btnClose->setFocusPolicy(Qt::NoFocus);
     btnClose->setObjectName("btnClose");
     dynamic_cast<QHBoxLayout *>(titleWidget->layout())->addStretch();
     titleWidget->layout()->addWidget(btnMinimize);
@@ -272,6 +277,52 @@ void AppConfig::ShortcutSettingsInit()
     shortcutLayout->addWidget(shortcutScrollArea);
     shortcutLayout->addWidget(btn);
 
+}
+
+/**
+ * @brief AppConfig::mousePressEvent
+ * @param event
+ */
+void AppConfig::mousePressEvent(QMouseEvent *event)
+{
+    if (Qt::LeftButton == event->button())
+    {
+        m_windowPos = this->pos();
+        m_mousePos = event->globalPos();
+        this->isMoving = true;
+    }
+
+    QWidget::mousePressEvent(event);
+}
+
+/**
+ * @brief AppConfig::mouseReleaseEvent
+ * @param event
+ */
+void AppConfig::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (Qt::LeftButton == event->button())
+    {
+        isMoving = false;
+    }
+    QWidget::mouseReleaseEvent(event);
+}
+
+/**
+ * @brief AppConfig::mouseMoveEvent
+ * @param event
+ */
+void AppConfig::mouseMoveEvent(QMouseEvent *event)
+{
+    if ((Qt::LeftButton & event->buttons())  && isMoving && (this->windowState() != Qt::WindowMaximized))
+    {
+        this->move(m_windowPos - (m_mousePos - event->globalPos()));
+
+        m_windowPos = this->pos();
+        m_mousePos = event->globalPos();
+    }
+
+    QWidget::mouseReleaseEvent(event);
 }
 
 

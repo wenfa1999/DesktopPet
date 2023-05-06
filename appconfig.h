@@ -18,6 +18,8 @@
 #include <QSizePolicy>
 #include <QGroupBox>
 #include <QFileDialog>
+#include <QPoint>
+#include <QMouseEvent>
 
 #include "mydatabase.h"
 
@@ -45,9 +47,19 @@ private:
     QLayout *InterfaceSetLayout;
     QLayout *AbouSetLayout;
 
+    QPoint m_windowPos;
+    QPoint m_mousePos;
+    bool isMoving = false;
+
 //    QWidget *showSettingsWidget;
 
 signals:
+
+    // QWidget interface
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 };
 
 #endif // APPCONFIG_H
