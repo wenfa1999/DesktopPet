@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include <QDebug>
 
 #if _MSC_VER >= 1600 // VS2010版本号是1600

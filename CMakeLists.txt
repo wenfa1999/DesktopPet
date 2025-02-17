@@ -17,8 +17,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/sqlite)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/sqlite)
 
 find_library(SQLITE_LIB sqlite3 ${CMAKE_CURRENT_SOURCE_DIR}/lib/sqlite)
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Sql)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -33,7 +32,7 @@ set(PROJECT_SOURCES
         mydatabase.cpp
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+if(QT_VERSION_MAJOR VERSION_GREATER_EQUAL 6)
     qt_add_executable(DesktopPet
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}

@@ -137,7 +137,7 @@ void AppConfig::InterfaceInit() {
     QVBoxLayout *widgetLayout = new QVBoxLayout(this);
     widgetLayout->addWidget(titleWidget);
     widgetLayout->addLayout(mainLayout);
-    widgetLayout->setMargin(10);
+    widgetLayout->setContentsMargins(10, 10, 10, 10);
     widgetLayout->setSpacing(0);
 
     this->setLayout(widgetLayout);

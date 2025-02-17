@@ -64,7 +64,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
             if ((p->vkCode >= 'A' && p->vkCode <= 'Z') || (p->vkCode >= '0' && p->vkCode <= '9'))
             {
-                foreignKey  = toupper(p->vkCode);
+                foreignKey = QChar::fromLatin1(toupper(p->vkCode));
             }
             qDebug() << "press:" << primaryKey << "+" << foreignKey ;
 
