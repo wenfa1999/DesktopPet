@@ -46,6 +46,8 @@ private:
     void setupHourlyChime();
     void saveSettings();
     void loadSettings();
+    void setMousePassThrough(bool enable);
+    QMenu* createContextMenu();
 
 private:
     QSystemTrayIcon *m_systemTrayIcon;
@@ -74,6 +76,9 @@ private:
     bool m_hourlyChimeEnabled;
     QAction *m_hourlyChimeAction;
 
+    QAction *m_mousePassThroughAction;
+    bool m_mousePassThrough;
+
     // QWidget interface
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -83,5 +88,6 @@ protected:
     bool nativeEvent(const QByteArray &eventType, void *message, qintptr *result) override;
     void showEvent(QShowEvent *event) override;
     void changeEvent(QEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 };
 #endif // MAINWINDOW_H

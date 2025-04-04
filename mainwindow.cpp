@@ -8,6 +8,8 @@
 #include <QPushButton>
 #include <QScreen>
 #include <QGuiApplication>
+#include <QContextMenuEvent>
+#include <QMessageBox>
 #pragma comment(lib, "winmm.lib")
 
 
@@ -17,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     ,settingInterface(nullptr)
     ,m_hourlyTimer(nullptr)
     ,m_hourlyChimeEnabled(false) // 默认不透明度
+    ,m_mousePassThrough(false) // 默认不启用鼠标穿透
 {
     // 初始化设置对象
     m_settings = new QSettings("DesktopPet", "Settings", this);
@@ -121,6 +124,11 @@ MainWindow::MainWindow(QWidget *parent)
                  << "Qt透明度:" << this->windowOpacity()
                  << "活跃:" << this->isActiveWindow();
     });
+
+    // 应用鼠标穿透设置
+    if (m_mousePassThrough) {
+        setMousePassThrough(true);
+    }
 }
 
 MainWindow::~MainWindow() {
@@ -216,20 +224,32 @@ void MainWindow::actionInit() {
 
     m_quitAction = new QAction("退出", this);
     connect(m_quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    // 添加鼠标穿透菜单项
+    m_mousePassThroughAction = new QAction("鼠标穿透", this);
+    m_mousePassThroughAction->setCheckable(true);
+    m_mousePassThroughAction->setChecked(m_mousePassThrough);
+    connect(m_mousePassThroughAction, &QAction::toggled, this, [=](bool checked) {
+        setMousePassThrough(checked);
+        // QMessageBox::information(this, "鼠标穿透", 
+        //     checked ? "鼠标穿透已启用，鼠标点击将透过桌宠" : "鼠标穿透已禁用");
+    });
 }
 
 /**
- * @brief 系统托盘初始化
+ * @brief 创建上下文菜单(用于右键点击和托盘图标)
+ * @return 返回菜单指针
  */
-void MainWindow::trayIconInit() {
-    m_trayIconMenu = new QMenu(this);
-    m_trayIconMenu->setProperty("class", "iconMenu");
-
-    m_trayIconMenu->addAction(m_showAction);
-    m_trayIconMenu->addAction(m_hideAction);
-    m_trayIconMenu->addSeparator();
-    m_trayIconMenu->addAction(m_imageAction);
-    m_trayIconMenu->addAction(m_hourlyChimeAction);
+QMenu* MainWindow::createContextMenu()
+{
+    QMenu *menu = new QMenu(this);
+    menu->setProperty("class", "iconMenu");
+    
+    menu->addAction(m_showAction);
+    menu->addAction(m_hideAction);
+    menu->addSeparator();
+    menu->addAction(m_imageAction);
+    menu->addAction(m_hourlyChimeAction);
     
     // 添加透明度设置菜单项
     QAction *opacityAction = new QAction("设置透明度", this);
@@ -269,12 +289,25 @@ void MainWindow::trayIconInit() {
         // 显示对话框
         dialog.exec();
     });
-    m_trayIconMenu->addAction(opacityAction);
+    menu->addAction(opacityAction);
     
-    m_trayIconMenu->addAction(m_setAction);
-    m_trayIconMenu->addSeparator();
-    m_trayIconMenu->addAction(m_quitAction);
+    // 添加鼠标穿透菜单项
+    menu->addAction(m_mousePassThroughAction);
+    
+    menu->addAction(m_setAction);
+    menu->addSeparator();
+    menu->addAction(m_quitAction);
+    
+    return menu;
+}
 
+/**
+ * @brief 系统托盘初始化
+ */
+void MainWindow::trayIconInit() {
+    // 创建并设置托盘图标菜单
+    m_trayIconMenu = createContextMenu();
+    
     m_systemTrayIcon = new QSystemTrayIcon(this);
     m_systemTrayIcon->setContextMenu(m_trayIconMenu);
     m_systemTrayIcon->setToolTip("桌宠");
@@ -516,6 +549,33 @@ void MainWindow::checkHourlyChime()
 }
 
 /**
+ * @brief 设置鼠标穿透状态
+ * @param enable 是否启用鼠标穿透
+ */
+void MainWindow::setMousePassThrough(bool enable)
+{
+    m_mousePassThrough = enable;
+    
+    // 使用Qt的方式设置鼠标穿透
+    setAttribute(Qt::WA_TransparentForMouseEvents, enable);
+    
+    // 同时使用Windows API设置鼠标穿透(更彻底)
+    HWND hwnd = (HWND)this->winId();
+    if (hwnd) {
+        LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+        if (enable) {
+            // 添加WS_EX_TRANSPARENT样式
+            SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_TRANSPARENT);
+        } else {
+            // 移除WS_EX_TRANSPARENT样式
+            SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_TRANSPARENT);
+        }
+    }
+    
+    qDebug() << "鼠标穿透状态设置为:" << enable;
+}
+
+/**
  * @brief 保存应用设置
  */
 void MainWindow::saveSettings()
@@ -524,6 +584,7 @@ void MainWindow::saveSettings()
     m_settings->setValue("lastImagePath", m_lastImagePath);
     m_settings->setValue("windowOpacity", m_windowOpacity);
     m_settings->setValue("windowGeometry", saveGeometry());
+    m_settings->setValue("mousePassThrough", m_mousePassThrough); // 保存鼠标穿透状态
     m_settings->sync();
     qDebug() << "设置已保存";
 }
@@ -536,6 +597,7 @@ void MainWindow::loadSettings()
     m_hourlyChimeEnabled = m_settings->value("hourlyChime", false).toBool();
     m_lastImagePath = m_settings->value("lastImagePath", "").toString();
     m_windowOpacity = m_settings->value("windowOpacity", 200).toInt();
+    m_mousePassThrough = m_settings->value("mousePassThrough", false).toBool(); // 加载鼠标穿透状态
     
     // 恢复窗口位置
     if (m_settings->contains("windowGeometry")) {
@@ -544,5 +606,24 @@ void MainWindow::loadSettings()
     
     qDebug() << "设置已加载: 整点报时=" << m_hourlyChimeEnabled 
              << " 上次图像=" << m_lastImagePath 
-             << " 不透明度=" << m_windowOpacity;
+             << " 不透明度=" << m_windowOpacity
+             << " 鼠标穿透=" << m_mousePassThrough;
+}
+
+/**
+ * @brief 处理右键菜单事件
+ */
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    // 创建临时菜单(与托盘图标菜单内容相同)
+    QMenu *contextMenu = createContextMenu();
+    
+    // 在鼠标位置显示菜单
+    contextMenu->exec(event->globalPos());
+    
+    // 清理菜单资源
+    delete contextMenu;
+    
+    // 事件已处理
+    event->accept();
 }
