@@ -1,10 +1,7 @@
-﻿#include "appconfig.h"
+#include "appconfig.h"
 #include <QDebug>
 #include <QHeaderView>
-
-#if _MSC_VER >= 1600 // VS2010版本号是1600
-#pragma execution_character_set("utf-8")
-#endif
+#include <QMessageBox>
 
 AppConfig::AppConfig(QWidget *parent)
     : QWidget{parent}
@@ -100,6 +97,7 @@ void AppConfig::InterfaceInit() {
         {
             this->showMaximized();
             btnMaximize->setStyleSheet("border-image: url(:/imgs/normal.svg);");
+            
         }
     });
     connect(btnMinimize, &QPushButton::clicked, this, [this](){
@@ -246,11 +244,21 @@ void AppConfig::ShortcutSettingsInit()
                             qDebug() << filePath;
                             MyDatabase *database = MyDatabase::instance();
                             database->updateValue(QString("F" + QString::number(j+1)).toStdString().c_str(), QString(i), filePath);
-                        }
-                    });
-            btn->setText(QString(i));
-//            btn->setFixedSize(100, 50); // 设置按钮的固定大小
-            btn->setFont(QFont("Arial", 12)); // 设置按钮的字体大小
+                            
+                                                        // 快捷键冲突检测
+                                                        QString key = "F" + QString::number(j+1);
+                                                        QString column = QString(i);
+                                                        QString existingFilePath;
+                                                        database->findValue(key, column, existingFilePath);
+                                                        if (!existingFilePath.isEmpty() && existingFilePath != filePath) {
+                                                            QMessageBox::warning(btn, "Shortcut Conflict", "This shortcut is already in use. Please choose another shortcut.");
+                                                            return;
+                                                        }
+                                                    }
+                                                });
+                                        btn->setText(QString(i));
+                            //            btn->setFixedSize(100, 50); // 设置按钮的固定大小
+                                        btn->setFont(QFont("Arial", 12));
             btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             FnLayout->addWidget(btn, (i-2) / 7, (i-2) % 7);
             FnLayout->setHorizontalSpacing(10); // 设置按钮之间的水平间距
@@ -288,25 +296,13 @@ void AppConfig::mousePressEvent(QMouseEvent *event)
     if (Qt::LeftButton == event->button())
     {
         m_windowPos = this->pos();
-        m_mousePos = event->globalPos();
+        m_mousePos = event->globalPosition().toPoint();
         this->isMoving = true;
     }
 
     QWidget::mousePressEvent(event);
 }
 
-/**
- * @brief AppConfig::mouseReleaseEvent
- * @param event
- */
-void AppConfig::mouseReleaseEvent(QMouseEvent *event)
-{
-    if (Qt::LeftButton == event->button())
-    {
-        isMoving = false;
-    }
-    QWidget::mouseReleaseEvent(event);
-}
 
 /**
  * @brief AppConfig::mouseMoveEvent
@@ -314,16 +310,29 @@ void AppConfig::mouseReleaseEvent(QMouseEvent *event)
  */
 void AppConfig::mouseMoveEvent(QMouseEvent *event)
 {
-    if ((Qt::LeftButton & event->buttons())  && isMoving && (this->windowState() != Qt::WindowMaximized))
+    if ((Qt::LeftButton & event->buttons()) && isMoving && (this->windowState() != Qt::WindowMaximized))
     {
-        this->move(m_windowPos - (m_mousePos - event->globalPos()));
+        QPoint newPos = event->globalPosition().toPoint();
+        this->move(this->pos() + (newPos - m_mousePos));
 
-        m_windowPos = this->pos();
-        m_mousePos = event->globalPos();
+        m_mousePos = newPos;
     }
 
-    QWidget::mouseReleaseEvent(event);
-}
+    QWidget::mouseMoveEvent(event);
+    }
+    
+    /**
+     * @brief AppConfig::mouseReleaseEvent
+     * @param event
+     */
+    void AppConfig::mouseReleaseEvent(QMouseEvent *event)
+    {
+        if (Qt::LeftButton == event->button())
+        {
+            isMoving = false;
+        }
+        QWidget::mouseReleaseEvent(event);
+    }
 
 
 

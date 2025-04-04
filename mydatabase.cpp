@@ -1,6 +1,6 @@
-
 #include "mydatabase.h"
 #include <QDebug>
+#include <QMessageBox>
 
 MyDatabase::MyDatabase(QObject *parent)
     : QObject{parent}
@@ -136,46 +136,58 @@ MyDatabase *MyDatabase::instance()
 
 void MyDatabase::updateValue(const char* key, const QString column, const QString &data)
 {
-    QString sql = "UPDATE function_keys SET '" + column + "' = '" + data + "' WHERE keys = '" + key + "'";
-    qDebug() << sql.toStdString().c_str();
+    sqlite3_stmt *stmt;
+    // 构建参数化查询 - 注意：SQLite不支持参数化表名和列名，所以列名需特殊处理
+    QString sql = QString("UPDATE function_keys SET %1 = ? WHERE keys = ?").arg(column);
+    qDebug() << "执行SQL: " << sql;
 
-    int rc = sqlite3_exec(m_db, sql.toUtf8().constData(), nullptr, nullptr, &errMsg);
-    if (rc != SQLITE_OK)
-    {
-        qDebug() << "写入sql失败" << errMsg;
-        sqlite3_free(errMsg);
+    int rc = sqlite3_prepare_v2(m_db, sql.toUtf8().constData(), -1, &stmt, nullptr);
+    if (rc == SQLITE_OK) {
+        // 绑定参数
+        sqlite3_bind_text(stmt, 1, data.toUtf8().constData(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, key, -1, SQLITE_TRANSIENT);
+        
+        rc = sqlite3_step(stmt);
+        if (rc != SQLITE_DONE) {
+            qDebug() << "写入SQL失败: " << sqlite3_errmsg(m_db);
+            QString errorMsg = QString("数据库操作失败: %1").arg(sqlite3_errmsg(m_db));
+            // 使用QMessageBox需要添加头文件
+            QMessageBox::warning(nullptr, "数据库错误", errorMsg);
+        }
+        sqlite3_finalize(stmt);
+    } else {
+        qDebug() << "准备SQL失败: " << sqlite3_errmsg(m_db);
+        if (errMsg != nullptr) {
+            sqlite3_free(errMsg);
+            errMsg = nullptr;
+        }
     }
 }
 
 void MyDatabase::findValue(const QString key, const QString column, QString &data)
 {
-    QString sql = "SELECT " + column + " FROM function_keys WHERE keys = '" + key + "'";
-    qDebug() << sql.toStdString().c_str();
-
     sqlite3_stmt *stmt;
+    // 构建参数化查询 - 注意：SQLite不支持参数化表名和列名
+    QString sql = QString("SELECT %1 FROM function_keys WHERE keys = ?").arg(column);
+    qDebug() << "执行SQL: " << sql;
 
     int rc = sqlite3_prepare_v2(m_db, sql.toUtf8().constData(), -1, &stmt, nullptr);
-    if (rc != SQLITE_OK)
-    {
-        qDebug() << "查询sql失败" << sqlite3_errmsg(m_db);
+    if (rc != SQLITE_OK) {
+        qDebug() << "查询SQL失败: " << sqlite3_errmsg(m_db);
+        return;
     }
-    else
-    {
-        while(sqlite3_step(stmt) == SQLITE_ROW)
-        {
-            QString result = QString::fromUtf8((const char*)sqlite3_column_text(stmt, 0));
-            qDebug() << "Result: " << result;
-            data = result;
+    
+    // 绑定参数
+    sqlite3_bind_text(stmt, 1, key.toUtf8().constData(), -1, SQLITE_TRANSIENT);
+    
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        const unsigned char* result = sqlite3_column_text(stmt, 0);
+        if (result) {
+            data = QString::fromUtf8(reinterpret_cast<const char*>(result));
+            qDebug() << "查询结果: " << data;
         }
-        sqlite3_finalize(stmt);
     }
-
-//    int rc = sqlite3_exec(m_db, sql.toUtf8().constData(), nullptr, nullptr, &errMsg);
-
-//    if (rc != SQLITE_OK)
-//    {
-//        qDebug() << "查询sql失败" << errMsg;
-//            sqlite3_free(errMsg);
-//    }
+    
+    sqlite3_finalize(stmt);
 }
 

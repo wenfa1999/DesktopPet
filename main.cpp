@@ -6,11 +6,6 @@
 #include <QUrl>
 #include "mydatabase.h"
 
-QMap<QString, QString> hotkeys = {
-    {"ctrl+alt+t", "C:\\Program Files\\qBittorrent\\qbittorrent.exe"},  // 常规可执行文件路径
-    {"ctrl+alt+s", "C:\\Users\\GWF\\OneDrive - MSFT\\图片\\user.png"},    // 图片路径
-    {"ctrl+alt+n", "calc.exe"},  // 环境变量
-};
 
 // 定义回调函数
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam);
